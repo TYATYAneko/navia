@@ -1,2 +1,2 @@
-# Hyper-Clicker-Simulator
-TYATYAnekoの新たな最高傑作
+# Planet_Hub
+いろいろなゲームが遊べる惑星
