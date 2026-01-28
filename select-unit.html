@@ -41,6 +41,14 @@
             }
 
             const subject = quizData[subjectKey];
+
+            // データ構造の確認
+            if (!subject.units || !Array.isArray(subject.units)) {
+                console.error('データ形式エラー: units が見つかりません。ブラウザのキャッシュをクリアしてください。');
+                alert('データの読み込みに問題があります。\nCtrl+Shift+R でページを再読み込みしてください。');
+                return;
+            }
+
             document.getElementById('subject-title').textContent = `${subject.icon} ${subject.name}`;
 
             const unitGrid = document.getElementById('unit-grid');
