@@ -2,27 +2,49 @@
 class QuizManager {
     constructor() {
         this.subject = null;
+        this.subjectKey = null;
+        this.unitIndex = null;
+        this.unitName = null;
         this.questions = [];
         this.currentIndex = 0;
         this.score = 0;
-        this.selectedIndex = null;  // 選択中の回答
-        this.answered = false;      // 答え合わせ済みかどうか
+        this.selectedIndex = null;
+        this.answered = false;
 
         this.init();
     }
 
     init() {
-        // URLパラメータから教科を取得
         const params = new URLSearchParams(window.location.search);
-        const subjectKey = params.get('subject');
+        this.subjectKey = params.get('subject');
+        const unitParam = params.get('unit');
 
-        if (!subjectKey || !quizData[subjectKey]) {
+        if (!this.subjectKey || !quizData[this.subjectKey]) {
             window.location.href = 'index.html';
             return;
         }
 
-        this.subject = quizData[subjectKey];
-        this.questions = this.shuffleArray([...this.subject.questions]).slice(0, 10);
+        this.subject = quizData[this.subjectKey];
+
+        // 単元から問題を取得
+        if (unitParam === 'all') {
+            // 全単元からランダム
+            this.unitName = '全単元';
+            let allQuestions = [];
+            this.subject.units.forEach(unit => {
+                allQuestions = allQuestions.concat(unit.questions);
+            });
+            this.questions = this.shuffleArray(allQuestions).slice(0, 10);
+        } else {
+            this.unitIndex = parseInt(unitParam);
+            if (isNaN(this.unitIndex) || !this.subject.units[this.unitIndex]) {
+                window.location.href = `select-unit.html?subject=${this.subjectKey}`;
+                return;
+            }
+            const unit = this.subject.units[this.unitIndex];
+            this.unitName = unit.name;
+            this.questions = this.shuffleArray([...unit.questions]);
+        }
 
         this.renderQuizHeader();
         this.renderQuestion();
@@ -38,7 +60,8 @@ class QuizManager {
     }
 
     renderQuizHeader() {
-        document.getElementById('subject-name').textContent = `${this.subject.icon} ${this.subject.name}`;
+        document.getElementById('subject-name').textContent =
+            `${this.subject.icon} ${this.subject.name} - ${this.unitName}`;
         this.updateProgress();
     }
 
@@ -65,10 +88,8 @@ class QuizManager {
             optionsContainer.appendChild(button);
         });
 
-        // 結果エリアを非表示
         document.getElementById('result-area').className = 'result-area';
 
-        // ボタンの状態をリセット
         const nextBtn = document.getElementById('next-btn');
         nextBtn.disabled = true;
         nextBtn.textContent = '答え合わせ';
@@ -84,7 +105,6 @@ class QuizManager {
 
         this.selectedIndex = index;
 
-        // 選択肢のスタイルを更新
         const buttons = document.querySelectorAll('.option-btn');
         buttons.forEach((btn, i) => {
             btn.classList.remove('selected');
@@ -93,7 +113,6 @@ class QuizManager {
             }
         });
 
-        // 答え合わせボタンを有効化
         document.getElementById('next-btn').disabled = false;
     }
 
@@ -108,7 +127,6 @@ class QuizManager {
             this.score++;
         }
 
-        // 選択肢のスタイルを更新
         const buttons = document.querySelectorAll('.option-btn');
         buttons.forEach((btn, index) => {
             btn.disabled = true;
@@ -120,7 +138,6 @@ class QuizManager {
             }
         });
 
-        // 結果を表示
         const resultArea = document.getElementById('result-area');
         resultArea.className = `result-area show ${isCorrect ? 'correct' : 'incorrect'}`;
 
@@ -128,7 +145,6 @@ class QuizManager {
             isCorrect ? '正解！' : '不正解...';
         document.getElementById('result-explanation').textContent = question.explanation;
 
-        // ボタンを「次へ」に変更
         const nextBtn = document.getElementById('next-btn');
         nextBtn.textContent = this.currentIndex < this.questions.length - 1 ? '次へ' : '結果を見る';
     }
@@ -141,6 +157,11 @@ class QuizManager {
         } else {
             this.renderQuestion();
         }
+    }
+
+    getQuizUrl() {
+        const unitParam = this.unitIndex !== null ? this.unitIndex : 'all';
+        return `quiz.html?subject=${this.subjectKey}&unit=${unitParam}`;
     }
 
     showFinalResult() {
@@ -161,24 +182,19 @@ class QuizManager {
 
         document.querySelector('.quiz-container').innerHTML = `
             <div class="final-result">
-                <h2>${this.subject.icon} ${this.subject.name} クイズ結果</h2>
+                <h2>${this.subject.icon} ${this.subject.name} - ${this.unitName}</h2>
                 <div class="score-display">${this.score} / ${this.questions.length}</div>
                 <p class="score-message">${message}</p>
                 <div class="nav-buttons">
-                    <button class="nav-btn secondary" onclick="location.href='quiz.html?subject=${this.getSubjectKey()}'">
+                    <button class="nav-btn secondary" onclick="location.href='${this.getQuizUrl()}'">
                         もう一度挑戦
                     </button>
-                    <button class="nav-btn primary" onclick="location.href='index.html'">
-                        トップへ戻る
+                    <button class="nav-btn primary" onclick="location.href='select-unit.html?subject=${this.subjectKey}'">
+                        単元選択へ
                     </button>
                 </div>
             </div>
         `;
-    }
-
-    getSubjectKey() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('subject');
     }
 
     showModal() {
@@ -190,40 +206,32 @@ class QuizManager {
     }
 
     bindEvents() {
-        // 選択肢クリック
         document.getElementById('options').addEventListener('click', (e) => {
             if (e.target.classList.contains('option-btn')) {
                 this.selectOption(parseInt(e.target.dataset.index));
             }
         });
 
-        // 答え合わせ/次へボタン
         document.getElementById('next-btn').addEventListener('click', () => {
             if (!this.answered) {
-                // まだ答え合わせしていない場合
                 this.checkAnswer();
             } else {
-                // 答え合わせ済みの場合は次の問題へ
                 this.nextQuestion();
             }
         });
 
-        // 戻るボタン
         document.getElementById('back-btn').addEventListener('click', () => {
             this.showModal();
         });
 
-        // モーダルのキャンセルボタン
         document.getElementById('modal-cancel').addEventListener('click', () => {
             this.hideModal();
         });
 
-        // モーダルの確認ボタン
         document.getElementById('modal-confirm').addEventListener('click', () => {
-            window.location.href = 'index.html';
+            window.location.href = `select-unit.html?subject=${this.subjectKey}`;
         });
 
-        // モーダル外クリックで閉じる
         document.getElementById('confirm-modal').addEventListener('click', (e) => {
             if (e.target.id === 'confirm-modal') {
                 this.hideModal();
@@ -232,7 +240,6 @@ class QuizManager {
     }
 }
 
-// ページ読み込み時に初期化
 document.addEventListener('DOMContentLoaded', () => {
     new QuizManager();
 });

@@ -377,3 +377,98 @@ footer {
     gap: 15px;
     justify-content: center;
 }
+
+/* 単元選択ページ */
+.unit-container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.unit-header {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    background: none;
+    border: none;
+    color: #667eea;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 5px 0;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.unit-header h2 {
+    font-size: 1.8rem;
+    color: #333;
+}
+
+.unit-instruction {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+}
+
+.unit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+}
+
+.unit-card {
+    display: block;
+    padding: 20px 15px;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.unit-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.unit-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.unit-card p {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.unit-card.all-units {
+    border: 2px dashed rgba(255,255,255,0.5);
+}
+
+/* 単元カードの教科別色 */
+.unit-card.math {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.unit-card.japanese {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.unit-card.english {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.unit-card.science {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.unit-card.social {
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+}

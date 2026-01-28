@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>単元選択 - Navia</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Navia</h1>
+        <p class="tagline">中学生のための学習サイト</p>
+    </header>
+
+    <main>
+        <div class="unit-container">
+            <div class="unit-header">
+                <button class="back-link" id="back-to-home">← 教科選択に戻る</button>
+                <h2 id="subject-title">教科名</h2>
+            </div>
+            <p class="unit-instruction">学習する単元を選んでください</p>
+            <div class="unit-grid" id="unit-grid">
+                <!-- 単元がここに動的に生成される -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Navia v1.0.0</p>
+    </footer>
+
+    <script src="data/questions.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const subjectKey = params.get('subject');
+
+            if (!subjectKey || !quizData[subjectKey]) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const subject = quizData[subjectKey];
+            document.getElementById('subject-title').textContent = `${subject.icon} ${subject.name}`;
+
+            const unitGrid = document.getElementById('unit-grid');
+
+            // 単元カードを生成
+            subject.units.forEach((unit, index) => {
+                const card = document.createElement('a');
+                card.href = `quiz.html?subject=${subjectKey}&unit=${index}`;
+                card.className = `unit-card ${subjectKey}`;
+                card.innerHTML = `
+                    <h3>${unit.name}</h3>
+                    <p>${unit.questions.length}問</p>
+                `;
+                unitGrid.appendChild(card);
+            });
+
+            // 全単元のカードを追加
+            const totalQuestions = subject.units.reduce((sum, unit) => sum + unit.questions.length, 0);
+            const allCard = document.createElement('a');
+            allCard.href = `quiz.html?subject=${subjectKey}&unit=all`;
+            allCard.className = `unit-card ${subjectKey} all-units`;
+            allCard.innerHTML = `
+                <h3>全単元</h3>
+                <p>${totalQuestions}問からランダム</p>
+            `;
+            unitGrid.appendChild(allCard);
+
+            // 戻るボタン
+            document.getElementById('back-to-home').addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>
