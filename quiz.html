@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クイズ - Navia</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Navia</h1>
+        <p class="tagline">中学生のための学習サイト</p>
+    </header>
+
+    <main>
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <h2 id="subject-name">教科名</h2>
+                <span class="progress" id="progress">1 / 10</span>
+            </div>
+
+            <div class="question-area">
+                <p class="question-number" id="question-number">第1問</p>
+                <p class="question-text" id="question-text">問題文がここに表示されます</p>
+            </div>
+
+            <div class="options" id="options">
+                <!-- 選択肢がここに動的に生成される -->
+            </div>
+
+            <div class="result-area" id="result-area">
+                <h3 id="result-title">結果</h3>
+                <p id="result-explanation">解説がここに表示されます</p>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn secondary" id="back-btn">戻る</button>
+                <button class="nav-btn primary" id="next-btn" disabled>次へ</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 確認モーダル -->
+    <div class="modal-overlay" id="confirm-modal">
+        <div class="modal">
+            <h3>確認</h3>
+            <p>クイズを中断してトップページに戻りますか？<br>進捗は保存されません。</p>
+            <div class="modal-buttons">
+                <button class="nav-btn secondary" id="modal-cancel">キャンセル</button>
+                <button class="nav-btn primary" id="modal-confirm">戻る</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Navia - 楽しく学ぼう！</p>
+    </footer>
+
+    <script src="data/questions.js"></script>
+    <script src="js/quiz.js"></script>
+</body>
+</html>
